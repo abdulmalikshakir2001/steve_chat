@@ -1,6 +1,3 @@
-
-
-
 document.addEventListener("DOMContentLoaded", (event) => {
     let socket;
     localStorage.setItem("socket_conn_status", "false");
@@ -19,6 +16,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
         // Scroll chat container to bottom
         chatContainer.scrollTop = chatContainer.scrollHeight;
+        input.value=""
     };
 
     // send button click handler

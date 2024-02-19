@@ -1,1 +1,2 @@
 C:\Users\Hp\AppData\Roaming\npm
+C:\Program Files\nodejs\
