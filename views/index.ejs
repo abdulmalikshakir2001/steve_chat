@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/fontawesom.css">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1>Chat App</h1>
+            </div>
+            <div class="connection-button">
+                <button data-status="not_connect" id="connection_button">Connect</button>
+                <button id="dis_connection_button" class="hide">Disconnect</button>
+            </div>
+        </nav>
+    </header>
+
+
+        <h1 class="heading">Get Response from Web socket server</h1>
+
+    
+
+    <div class="container">
+
+        <div class="chat-container" id="chatContainer">
+            <div></div>
+
+        </div>
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+
+
+
+    <script src="socket.js"></script>
+    <script src="fontawesome.js"></script>
+    <script src="/script.js"></script>
+</body>
+
+</html>
