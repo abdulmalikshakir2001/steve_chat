@@ -19,30 +19,37 @@ const __dirname = dirname(__filename);
 // Now you can use __dirname as before
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
+app.use(express.json());
 
 
 app.get('/', (req, res) => {
   res.render('index', { title: 'Home' });
 });
+app.get('/work_station_b', (req, res) => {
+  res.render('work_station_b', { title: 'work station b' });
+});
 
 // Start the server
 const port = process.env.PORT || 3000;
-io.on('connection',function(socket){
-    console.log('New Connection',socket.id);
-    socket.emit('connected',{status:true})
-
-    socket.on('chat',(data)=>{
-        socket.emit('responseChat',{chatMessage:data.chatMessage})
-
-    })
+// io.listen(8001);
 
 
-    socket.on('end',(data)=>{
-        console.log('disconnected')
-        socket.disconnect();
-        
-    })
+app.post('/listen',(req,res,next)=>{
+    const {port} =  req.body
+    
+io.listen(port);
+return res.json({port})
 
 })
+io.on('connection',function(socket){
+    console.log('New Connection',socket.id);
+    // socket.emit('connected',{status:true})
+    socket.emit('connectedToA','true')
+
+    socket.on('senderMessage',(message)=>{
+        socket.emit('toSender',message)
+        socket.broadcast.emit('toReciever',message)
+    })
+})
 app.listen(port, () => console.log(`Server is running on port ${port}`));
-io.listen(8001);
+

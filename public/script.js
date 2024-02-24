@@ -1,66 +1,81 @@
-document.addEventListener("DOMContentLoaded", (event) => {
-    let socket;
-    localStorage.setItem("socket_conn_status", "false");
-    const connect_button = document.querySelector("#connection_button");
-    const dis_connection_button = document.querySelector(
-        "#dis_connection_button"
-    );
-    const chatContainer = document.getElementById("chatContainer");
-    const input = document.getElementById("messageInput");
+// script.js
+const listenButton = document.getElementById("listenButton");
+const sendButton = document.getElementById("sendButton");
+const portInput = document.getElementById("portInput");
+const messageInput = document.getElementById("messageInput");
+const chatContainer = document.getElementById("chatContainer");
+const urlInput = document.getElementById("url_input");
+const successAlert = document.querySelector(".success-alert");
+var socket
+const handleListen =  async () => {
+    const port = portInput.value;
+      socket = io.connect(`http://localhost:${port}`);
+      socket.on("toReciever", (message) => {
+        const newDiv = document.createElement("div");
+        newDiv.id = "myNewDiv"; // Set an ID (optional)
+        newDiv.classList.add("chat-message"); // Add a CSS class (optional)
+        newDiv.textContent = `${message}`; // Set the content (optional)
+        chatContainer.appendChild(newDiv);
+      });
 
-    const handleResponseChat = (data) => {
-        const newChat = document.createElement("div");
-        newChat.classList.add("chat");
-        newChat.textContent = data.chatMessage;
-        chatContainer.appendChild(newChat);
+    try {
+        const response = await fetch('/listen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ port }), // Send the port number as JSON
+        });
 
-        // Scroll chat container to bottom
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-        input.value=""
-    };
-
-    // send button click handler
-    function handleSendButtonClick(e) {
-        
-        if (input.value.trim() === "") {
-            alert("Type a message to get response from the socket server");
-            return false;
+        if (response.ok) {
+            const data = await response.json();
+            const existingSpan = successAlert.querySelector('span');
+        if (existingSpan) {
+            successAlert.removeChild(existingSpan);
         }
-        const status = connect_button.getAttribute("data-status");
-        if (localStorage.getItem("socket_conn_status") == "false") {
-            alert("Please click the connect button to get response");
-            return false;
-        }
+            // Create a new span element
+    const spanElement = document.createElement('span');
+    spanElement.textContent = `work station A listening to Port : ${data.port}` ; // Set the content of the span
+    // Append the span to the existing div
+    successAlert.appendChild(spanElement);
 
-        // send chat message
-        var inputField = document.getElementById("messageInput");
-        var inputValue = inputField.value;
-        socket.emit("chat", { chatMessage: inputValue });
+            // current
+            
+            
+
+        } else {
+            console.error('Error connecting to server');
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
     }
+}
 
-    document.getElementById("sendButton").addEventListener("click", handleSendButtonClick);
 
-    // socket server start ----------------------------
-    connect_button.addEventListener("click", () => {
-        localStorage.setItem("socket_conn_status", "true");
+listenButton.addEventListener('click',handleListen);
 
-        socket = io("http://localhost:8001");
-        socket.on("connected", (data) => {
-            dis_connection_button.classList.remove("hide");
-            connect_button.classList.add("hide");
-            alert("You are connected to the socket successfully");
-        });
 
-        dis_connection_button.addEventListener("click", () => {
-            socket.emit("end", "disconnect the user");
-            localStorage.setItem("socket_conn_status", "false");
-            dis_connection_button.classList.add("hide");
-            connect_button.classList.remove("hide");
-            alert("You are disconnected from the socket server");
-        });
-
-        // Listen for response chat messages
-        socket.on("responseChat", handleResponseChat);
+const handleSend = () => {
+    // messageInput
+    socket.emit("senderMessage", messageInput.value);
+    socket.on("toSender", (message) => {
+      const newDiv = document.createElement("div");
+      newDiv.id = "myNewDiv"; // Set an ID (optional)
+      newDiv.classList.add("chat-message"); // Add a CSS class (optional)
+      newDiv.textContent = `${message}`; // Set the content (optional)
+      chatContainer.appendChild(newDiv);
     });
-    //------------------------------- socket server end
-});
+    socket.on("toReciever", (message) => {
+      const newDiv = document.createElement("div");
+      newDiv.id = "myNewDiv"; // Set an ID (optional)
+      newDiv.classList.add("chat-message"); // Add a CSS class (optional)
+      newDiv.textContent = `${message}`; // Set the content (optional)
+      chatContainer.appendChild(newDiv);
+    });
+  
+  
+  };
+  sendButton.addEventListener("click", handleSend);
+  
+
+
