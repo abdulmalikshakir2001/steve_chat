@@ -31,16 +31,21 @@ const handleListen = async () => {
 };
 listenButton.addEventListener("click", handleListen);
 
+const handleToSender = (message) => {
+    const newDiv = document.createElement("div");
+    newDiv.id = "myNewDiv"; 
+    newDiv.classList.add("chat-message"); 
+    newDiv.textContent = `${message}`; 
+    chatContainer.appendChild(newDiv);
+  }
+
 const handleSend = () => {
   // messageInput
   socket.emit("senderMessage", messageInput.value);
-  socket.on("toSender", (message) => {
-    const newDiv = document.createElement("div");
-    newDiv.id = "myNewDiv"; // Set an ID (optional)
-    newDiv.classList.add("chat-message"); // Add a CSS class (optional)
-    newDiv.textContent = `${message}`; // Set the content (optional)
-    chatContainer.appendChild(newDiv);
-  });
+  socket.on("toSender", handleToSender);
+  
+
+
   socket.on("toReciever", (message) => {
     const newDiv = document.createElement("div");
     newDiv.id = "myNewDiv"; // Set an ID (optional)
